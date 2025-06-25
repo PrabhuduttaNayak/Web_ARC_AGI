@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Infographic: A Genetic Algorithm for ARC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="antialiased">
+    <!-- Navigation Bar -->
+    <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-20">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="font-bold text-xl text-sky-700">ARC Neurogenetic</div>
+        <div class="space-x-6">
+          <a href="index.html" class="text-slate-700 font-semibold hover:text-sky-600 border-b-2 border-sky-600 pb-1">Home</a>
+          <a href="interface.html" class="text-slate-700 font-semibold hover:text-sky-600 pb-1">Interface</a>
+          <a href="GeneticAlgo.html" class="text-slate-700 font-semibold hover:text-sky-600 pb-1">Genetic Algo</a>
+          <a href="solver.html" class="text-slate-700 font-semibold hover:text-sky-600 pb-1">Solver</a>
+        </div>
+      </div>
+    </nav>
+    <main class="container mx-auto px-4 py-8 mt-8">
+        
+        <section id="intro" class="relative text-center my-16 overflow-hidden">
+  <!-- Background image (fully visible) -->
+  <div class="absolute inset-0 flex justify-center items-center">
+    <img src="images/makers_lab.jpg" alt="Makers Lab Logo"
+         class="w-full h-auto object-contain opacity-25">
+  </div>
+
+  <!-- Content on top of image -->
+  <div class="relative z-10 px-4 py-24">
+    <h1 class="text-5xl font-extrabold tracking-tight text-slate-900">
+      Solving Abstract Puzzles Using Neurogenetic Approach
+    </h1>
+    <p class="mt-6 max-w-3xl mx-auto text-lg text-slate-600">
+      An interactive exploration of a system that uses a Genetic Algorithm to automatically discover programs that solve complex visual reasoning tasks from the Abstraction and Reasoning Corpus (ARC).
+    </p>
+  </div>
+</section>
+
+
+
+
+        <!-- <section id="intro" class="text-center my-16">
+                        <img src="makers_lab.jpg" alt="Makers Lab Logo" class="w-96 mx-auto mt-4">
+
+            <h1 class="text-5xl font-extrabold tracking-tight text-slate-900">Solving Abstract Puzzles Using Neurogenetic Approach</h1>
+            <p class="mt-6 max-w-3xl mx-auto text-lg text-slate-600">
+                An interactive exploration of a system that uses a Genetic Algorithm to automatically discover programs that solve complex visual reasoning tasks from the Abstraction and Reasoning Corpus (ARC).
+            </p>
+        </section> -->
+
+        <section id="components" class="my-24">
+            <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">The Core Components</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card text-center">
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-100 text-sky-600 mb-4">
+                        <span class="text-3xl font-bold font-mono">ƒ(x)</span>
+                    </div>
+                    <h3 class="text-xl font-semibold">1. Domain Specific Language (DSL)</h3>
+                    <p class="mt-2 text-slate-500">A "vocabulary" of high-level functions like <code>rot90</code>, <code>hmirror</code>, and <code>tophalf</code> that act as the basic building blocks for constructing any solution.</p>
+                </div>
+                <div class="card text-center">
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-100 text-sky-600 mb-4">
+                        <span class="text-3xl font-bold">☊</span>
+                    </div>
+                    <h3 class="text-xl font-semibold">2. Directed Acyclic Graph (DAG)</h3>
+                    <p class="mt-2 text-slate-500">A "blueprint" or flowchart representing the program's logic. This structure allows for complex solutions where steps can branch and merge data.</p>
+                </div>
+                <div class="card text-center">
+                     <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-100 text-sky-600 mb-4">
+                        <span class="text-3xl">🧬</span>
+                    </div>
+                    <h3 class="text-xl font-semibold">3. Genetic Algorithm (GA)</h3>
+                    <p class="mt-2 text-slate-500">It intelligently searches for a solution by evolving a population of programs over many generations.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dsl-vocabulary" class="my-24">
+            <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">DSL Vocabulary Explorer</h2>
+            <div class="card">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6" id="dsl-buttons">
+                </div>
+                <div id="dsl-display" class="bg-slate-50 p-6 rounded-lg min-h-[12rem] flex items-center justify-center">
+                     <p class="text-slate-500">Click a function to see what it does</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ga-flowchart" class="my-24">
+            <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">The Genetic Algorithm Flow</h2>
+            <div class="flex flex-col items-center space-y-4">
+                <div class="relative has-tooltip flowchart-node border-green-400 bg-green-50 text-green-800">
+                    <span>Initialize Population</span>
+                    <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-slate-800 text-white text-xs rounded-lg shadow-lg">Start with a population of random, valid DAG programs. This creates the initial gene pool.</div>
+                </div>
+                <div class="flowchart-arrow"></div>
+                <div class="relative has-tooltip flowchart-node border-blue-400 bg-blue-50 text-blue-800">
+                    <span>Evaluate Fitness</span>
+                    <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-slate-800 text-white text-xs rounded-lg shadow-lg">Each program is scored based on how well its output matches the training examples. Lower scores are better.</div>
+                </div>
+                <div class="flowchart-arrow"></div>
+                <div class="relative has-tooltip flowchart-node border-purple-400 bg-purple-50 text-purple-800">
+                    <span>Check for Solution</span>
+                    <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-slate-800 text-white text-xs rounded-lg shadow-lg">If any program perfectly solves all training examples, the algorithm has succeeded and returns that program.</div>
+                </div>
+                <div class="flowchart-arrow"></div>
+                <div class="relative has-tooltip flowchart-node border-amber-400 bg-amber-50 text-amber-800">
+                    <span>Select Elites</span>
+                    <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-slate-800 text-white text-xs rounded-lg shadow-lg">The best-performing programs (the "elites") are selected to pass their traits to the next generation.</div>
+                </div>
+                <div class="flowchart-arrow"></div>
+                <div class="relative has-tooltip flowchart-node border-rose-400 bg-rose-50 text-rose-800">
+                    <span>Reproduce: Crossover & Mutation</span>
+                    <div class="tooltip absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 p-3 bg-slate-800 text-white text-xs rounded-lg shadow-lg">Create a new generation by combining ("crossover") and randomly modifying ("mutation") the elite programs. This creates new variations to test.</div>
+                </div>
+                <div class="h-16 w-px bg-gray-300 relative">
+                     <div class="absolute -right-20 top-1/2 -translate-y-1/2 font-semibold text-gray-500">Loop ⟳</div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="ga-operators" class="my-24">
+            <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">Genetic Operators</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold text-center mb-2">Vertex Mutation</h3>
+                    <p class="text-xs text-slate-500 text-center mb-4">Swap a function.</p>
+                    <div class="text-center font-mono text-sm">
+                        <div class="bg-red-50 p-2 rounded text-red-700">I → rot90 → O</div>
+                        <div class="my-2 font-bold text-slate-400">↓</div>
+                        <div class="bg-green-50 p-2 rounded text-green-700">I → hmirror → O</div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold text-center mb-2">Edge Mutation</h3>
+                    <p class="text-xs text-slate-500 text-center mb-4">Rewire a connection.</p>
+                     <div class="text-center font-mono text-sm">
+                        <div class="bg-red-50 p-2 rounded text-red-700">I → rot90 → vconcat</div>
+                        <div class="my-2 font-bold text-slate-400">↓</div>
+                        <div class="bg-green-50 p-2 rounded text-green-700">I → tophalf → vconcat</div>
+                    </div>
+                </div>
+                 <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold text-center mb-2">Node Addition</h3>
+                    <p class="text-xs text-slate-500 text-center mb-4">Insert a new step.</p>
+                    <div class="text-center font-mono text-sm">
+                        <div class="bg-red-50 p-2 rounded text-red-700">I → O</div>
+                        <div class="my-2 font-bold text-slate-400">↓</div>
+                        <div class="bg-green-50 p-2 rounded text-green-700">I → tophalf → O</div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold text-center mb-2">Crossover</h3>
+                    <p class="text-xs text-slate-500 text-center mb-4">Combine two programs.</p>
+                     <div class="text-center font-mono text-sm space-y-1">
+                        <div class="bg-blue-50 p-2 rounded text-blue-700">P1: I → tophalf → rot90 → vconcat → O</div>
+                        <div class="text-2xl font-bold text-slate-400">+</div>
+                        <div class="bg-indigo-50 p-2 rounded text-indigo-700">P2: I → hmirror → bottomhalf → vconcat → O</div>
+                        <div class="my-2 font-bold text-slate-400">↓</div>
+                        <div class="bg-green-50 p-2 rounded text-green-700">Child: I → tophalf → bottomhalf → vconcat → O</div>
+                     </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="walkthrough" class="my-24">
+            <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">Example Walkthrough</h2>
+            <div class="card max-w-4xl mx-auto">
+                <p class="text-center text-slate-600 mb-6">Let's walk through the execution of a program found by the GA. The goal is to take the top half of the input, rotate it, and stack it on the original.</p>
+                <div id="walkthrough-container" class="flex flex-col items-center">
+                </div>
+                <div class="flex justify-center mt-6">
+                    <button id="walkthrough-btn" class="bg-sky-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-700 transition-colors">Start Walkthrough</button>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Genetic Algorithm - ARC Neurogenetic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      window.mermaid = mermaid;
+      mermaid.initialize({ startOnLoad: false });
+    </script>
+    <style>
+      .dag-box { font-family: monospace; background: #f8fafc; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
+      .dag-node { display: inline-block; background: #e0f2fe; border-radius: 0.25rem; padding: 0.25rem 0.5rem; margin: 0.25rem; }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Navigation Bar -->
+    <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-20">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="font-bold text-xl text-sky-700">ARC Neurogenetic</div>
+        <div class="space-x-6">
+          <a href="index.html" class="text-slate-700 font-semibold hover:text-sky-600 pb-1">Home</a>
+          <a href="interface.html" class="text-slate-700 font-semibold hover:text-sky-600 pb-1">Interface</a>
+          <a href="GeneticAlgo.html" class="text-slate-700 font-semibold hover:text-sky-600 border-b-2 border-sky-600 pb-1">Genetic Algo</a>
+          <a href="solver.html" class="text-slate-700 font-semibold hover:text-sky-600 pb-1">Solver</a>
+        </div>
+      </div>
+    </nav>
+    <main class="container mx-auto px-4 py-8 mt-8">
+      <h1 class="text-3xl font-bold mb-6 text-center">Genetic Algorithm: DAG Evolution Demo</h1>
+      <div class="mb-8 text-center text-slate-600 max-w-2xl mx-auto">
+        <!-- Instructional text removed as requested -->
+      </div>
+      <div class="flex flex-col md:flex-row gap-8">
+        <div class="flex-1">
+          <h2 class="text-xl font-semibold mb-2">Current DAG</h2>
+          <div id="dagMermaid" class="dag-box"><div class="text-slate-400">Loading diagram...</div></div>
+          <div class="flex gap-4 mt-4">
+            <button id="prevBtn" class="bg-slate-400 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-500 transition-colors">Previous Mutation</button>
+            <button id="nextBtn" class="bg-sky-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-700 transition-colors">Next Mutation</button>
+            <button id="resetBtn" class="bg-rose-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-rose-700 transition-colors">Restore Initial DAG</button>
+          </div>
+        </div>
+        <div class="flex-1">
+          <h2 class="text-xl font-semibold mb-2">Mutation Details</h2>
+          <div id="mutationDetails" class="dag-box"></div>
+          <h2 class="text-xl font-semibold mt-8 mb-2">Candidate Functions</h2>
+          <div class="bg-white p-4 rounded-lg border text-sm">
+            <ul class="list-disc ml-6">
+              <li><b>function_1</b>: <span class="text-slate-600">(inputs: 1, outputs: 2)</span></li>
+              <li><b>function_2</b>: <span class="text-slate-600">(inputs: 1, outputs: 1)</span></li>
+              <li><b>function_3</b>: <span class="text-slate-600">(inputs: 3, outputs: 1)</span></li>
+            </ul>
+            <div class="mt-2 text-slate-500">These are the candidate nodes used for vertex mutation in the DAG.</div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-12">
+        <h2 class="text-xl font-semibold mb-2">About the DAG & Mutation</h2>
+        <div class="bg-slate-50 p-4 rounded-lg text-slate-700">
+          <b>DSLNode:</b> Represents a function in the program (e.g., hmirror, vconcat).<br>
+          <b>ProgramDAG:</b> Represents the program as a directed acyclic graph (DAG) of nodes.<br>
+          <b>Vertex Mutation:</b> Randomly replaces a node's operation with another, rewiring its inputs.<br>
+          This demo is a dynamic simulation based on the notebook's logic.
+        </div>
+      </div>
+    </main>
+    <script>
+// --- DSLNode and DAG logic in JS ---
+function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+class DSLNode {
+  constructor(name, num_inputs, num_outputs) {
+    this.name = name;
+    this.num_inputs = num_inputs;
+    this.num_outputs = num_outputs;
+  }
+}
+
+class ProgramDAG {
+  constructor(nodes, in_edges) {
+    // nodes: {id: DSLNode}
+    // in_edges: {id: [input_ids]}
+    this.nodes = deepClone(nodes);
+    this.in_edges = deepClone(in_edges);
+    this.out_edges = {};
+    for (const [tgt, sources] of Object.entries(this.in_edges)) {
+      for (const src of sources) {
+        if (!this.out_edges[src]) this.out_edges[src] = [];
+        this.out_edges[src].push(tgt);
+      }
+    }
+  }
+
+  getEligibleNodes() {
+    return Object.entries(this.nodes).filter(([nid, _]) => nid !== 'I' && nid !== 'O');
+  }
+
+  getDAGOrder() {
+    // Just use insertion order for demo (matches Python's list(self.nodes.keys()))
+    return Object.keys(this.nodes);
+  }
+
+  vertex_mutation(candidate_nodes) {
+    const eligible = this.getEligibleNodes();
+    if (eligible.length === 0) return {msg: 'No eligible nodes to mutate.'};
+    // Pick random eligible node
+    const [selected_id, selected_node] = eligible[Math.floor(Math.random() * eligible.length)];
+    // Pick random candidate
+    const template = candidate_nodes[Math.floor(Math.random() * candidate_nodes.length)];
+    // Remove old input edges
+    if (this.in_edges[selected_id]) {
+      for (const src of this.in_edges[selected_id]) {
+        if (this.out_edges[src]) {
+          this.out_edges[src] = this.out_edges[src].filter(x => x !== selected_id);
+        }
+      }
+    }
+    this.in_edges[selected_id] = [];
+    // Find valid upstream inputs
+    const dag_order = this.getDAGOrder();
+    const selected_index = dag_order.indexOf(selected_id);
+    const available_inputs = dag_order.slice(0, selected_index);
+    if (available_inputs.length < template.num_inputs) {
+      return {msg: 'Not enough upstream nodes available for new inputs.'};
+    }
+    // Pick random new inputs
+    const chosen_inputs = [];
+    let available = [...available_inputs];
+    for (let i = 0; i < template.num_inputs; i++) {
+      // Pick random, remove from available to avoid duplicates
+      const idx = Math.floor(Math.random() * available.length);
+      chosen_inputs.push(available[idx]);
+      available.splice(idx, 1);
+    }
+    // Update node in-place
+    this.nodes[selected_id].name = template.name;
+    this.nodes[selected_id].num_inputs = template.num_inputs;
+    this.nodes[selected_id].num_outputs = template.num_outputs;
+    // Add new input edges
+    this.in_edges[selected_id] = chosen_inputs;
+    for (const inp of chosen_inputs) {
+      if (!this.out_edges[inp]) this.out_edges[inp] = [];
+      this.out_edges[inp].push(selected_id);
+    }
+    return {
+      msg: `Node ${selected_id} was mutated to <b>${template.name}</b> (inputs: ${chosen_inputs.join(', ')})`,
+      node: selected_id,
+      new_name: template.name,
+      new_inputs: chosen_inputs
+    };
+  }
+
+  toMermaid() {
+    // Build Mermaid graph string
+    let lines = ['graph TD'];
+    // Show input node
+    lines.push('  I((I))');
+    // Nodes
+    for (const [nid, node] of Object.entries(this.nodes)) {
+      if (nid === 'I') continue;
+      lines.push(`  ${nid}[${node.name}]`);
+    }
+    // Edges
+    for (const [to, froms] of Object.entries(this.in_edges)) {
+      for (const from of froms) {
+        lines.push(`  ${from} --> ${to}`);
+      }
+    }
+    return lines.join('\n');
+  }
+}
+
+// --- Initial DAG setup ---
+const initialNodes = {
+  x1: new DSLNode('hmirror', 1, 1),
+  x2: new DSLNode('vmirror', 1, 1),
+  x3: new DSLNode('vmirror', 1, 1),
+  x4: new DSLNode('hconcat', 2, 1),
+  x5: new DSLNode('hconcat', 2, 1),
+  O:  new DSLNode('vconcat', 2, 1),
+};
+const initialInEdges = {
+  x1: ['I'],
+  x2: ['x1'],
+  x3: ['I'],
+  x4: ['x2', 'x1'],
+  x5: ['x3', 'I'],
+  O:  ['x4', 'x5'],
+};
+const candidateNodes = [
+  new DSLNode('function_1', 1, 2),
+  new DSLNode('function_2', 1, 1),
+  new DSLNode('function_3', 3, 1),
+];
+
+// --- Mutation history ---
+let dagHistory = [];
+let mutationHistory = [];
+let state = 0;
+
+function resetDAG() {
+  dagHistory = [new ProgramDAG(initialNodes, initialInEdges)];
+  mutationHistory = [{msg: 'Initial DAG'}];
+  state = 0;
+}
+
+async function renderDAG() {
+  const dag = dagHistory[state];
+  const el = document.getElementById('dagMermaid');
+  el.innerHTML = '<div class="text-slate-400">Rendering diagram...</div>';
+  if (!window.mermaid) { setTimeout(renderDAG, 100); return; }
+  try {
+    const { svg } = await window.mermaid.render('mermaidDAG', dag.toMermaid());
+    el.innerHTML = svg;
+  } catch (e) {
+    el.innerHTML = '<div class="text-red-500">Diagram error: ' + e + '</div>';
+  }
+  const mut = mutationHistory[state];
+  document.getElementById('mutationDetails').innerHTML = `<b>Step ${state}</b><br>${mut.msg}`;
+}
+
+document.getElementById('nextBtn').onclick = function() {
+  if (state === dagHistory.length - 1) {
+    // Mutate
+    const prevDAG = dagHistory[state];
+    const newDAG = new ProgramDAG(prevDAG.nodes, prevDAG.in_edges);
+    const mut = newDAG.vertex_mutation(candidateNodes);
+    dagHistory.push(newDAG);
+    mutationHistory.push(mut);
+    state++;
+  } else {
+    state++;
+  }
+  renderDAG();
+};
+document.getElementById('prevBtn').onclick = function() {
+  if (state > 0) state--;
+  renderDAG();
+};
+document.getElementById('resetBtn').onclick = function() {
+  resetDAG();
+  renderDAG();
+};
+resetDAG();
+renderDAG();
+    </script>
+</body>
+</html> 

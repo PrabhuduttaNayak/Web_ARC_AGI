@@ -1,0 +1,20 @@
+body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; }
+.card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; padding: 1.5rem; transition: all 0.3s ease-in-out; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+.flowchart-node { border: 2px solid; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-align: center; }
+.flowchart-arrow::after { content: '↓'; font-size: 2.5rem; color: #9ca3af; line-height: 1; }
+.arc-grid { display: grid; border: 1px solid #e5e7eb; }
+.arc-cell { width: 3rem; height: 3rem; }
+.color-0 { background-color: #000000; } 
+.color-1 { background-color: #0074D9; } 
+.color-2 { background-color: #FF4136; }
+.color-3 { background-color: #2ECC40; } 
+.color-4 { background-color: #FFDC00; } 
+.color-5 { background-color: #AAAAAA; }
+.color-6 { background-color: #F012BE; } 
+.color-7 { background-color: #FF851B; } 
+.color-8 { background-color: #7FDBFF; } 
+.color-9 { background-color: #870C25; }
+.tooltip { visibility: hidden; opacity: 0; transition: opacity 0.3s; }
+.has-tooltip:hover .tooltip { visibility: visible; opacity: 1; }
+.chart-container { position: relative; width: 100%; max-width: 600px; margin: auto; height: 350px; }
